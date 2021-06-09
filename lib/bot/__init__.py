@@ -53,17 +53,33 @@ class Bot(BotBase):
 bot = Bot()
 board = Bingo()
 
-@bot.command(name='update')
-async def update(ctx, letter, square: int):
-    board.updatesquare(letter, square)
+@bot.command(name='green')
+async def green(ctx, letter, square: int):
+    board.greenUpdate(letter, square)
+    await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
+
+@bot.command(name='red')
+async def red(ctx, letter, square: int):
+    board.redUpdate(letter, square)
+    await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
+
+@bot.command(name='showboard')
+async def showboard(ctx):
     await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
 
 @bot.command(name='commands')
 async def commands(ctx):
-    myEmbed = discord.Embed(title="Commands", description="Last updated 6/1/2021", color=0x00ff00)
+    myEmbed = discord.Embed(title="Commands", description="Last updated 6/2/2021", color=0x00ff00)
     myEmbed.add_field(name="Current Version", value=bot.VERSION, inline=False)
-    myEmbed.add_field(name="-update <letter> <square>", value="Update square on the bingo board", inline=False)
+    myEmbed.add_field(name="-green <letter> <square>", value="Change square on the board to green", inline=False)
+    myEmbed.add_field(name="-red <letter> <square>", value="Change square on the board to red", inline=False)
+    myEmbed.add_field(name="-showboard", value="Displays current board", inline=False)
+    myEmbed.add_field(name="starttime", value="Shows when the current board was generated", inline=False)
     myEmbed.set_footer(text="Future releases: idk suggest something")
     myEmbed.set_author(name="bendy")
 
     await bot.stdout.send(embed=myEmbed)
+
+@bot.command(name='starttime')
+async def commands(ctx):
+    await bot.stdout.send("The current board was generated on " + board.getStartDate() + " at " + board.getStartTime())
