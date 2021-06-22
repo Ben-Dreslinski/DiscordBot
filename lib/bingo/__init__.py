@@ -55,8 +55,11 @@ class Bingo():
                     if (self.stateBoard[j][i] == 0):
                         d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (255, 0, 0))
                     elif (self.rowDone > -1 or self.colDone > -1 or self.diagDone > -1):
-                        if (self.diagDone > 0 and i == 2 and j == 2):
-                            d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (255, 255, 0))
+                        if (self.diagDone > 0):
+                            if (i == 2 and j == 2):
+                                d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (255, 255, 0))
+                            elif (i == j):
+                                d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (255, 255, 0))
                         elif ((self.rowDone == j) or (self.colDone == i)):
                             if (i == 2 and j == 2):
                                 d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (255, 255, 0))
@@ -87,15 +90,15 @@ class Bingo():
         return (self.startTime).strftime("%m/%d/%Y")
 
     def getCol(self, letter: str):
-        if (letter == "B" or letter == 'b'):
+        if (letter.upper() == 'B'):
             col = 0
-        elif (letter == "I" or letter == 'i'):
+        elif (letter.upper() == 'I'):
             col = 1
-        elif (letter == "N" or letter == 'n'):
+        elif (letter.upper() == 'N'):
             col = 2
-        elif (letter == "G" or letter == 'g'):
+        elif (letter.upper() == 'G'):
             col = 3
-        elif (letter == "O" or letter == 'o'):
+        elif (letter.upper() == 'O'):
             col = 4
         
         return col
@@ -191,7 +194,7 @@ class Bingo():
         if (self.colSum(col) != 5):
             self.colDone = -1
         
-        if (self.diagonalSum() == 5):
+        if (self.diagonalSum() != 5):
             self.diagDone = -1
 
         self.populateBoard(col, row)
