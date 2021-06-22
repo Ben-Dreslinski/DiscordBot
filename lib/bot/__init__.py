@@ -36,8 +36,8 @@ class Bot(BotBase):
     async def on_ready(self):
         if (not self.ready):
             self.ready = True
-            self.stdout = self.get_channel(849398797535936522)
-            self.guild = self.get_guild(836374591953174528)
+            self.stdout = self.get_channel()
+            self.guild = self.get_guild()
             board = Bingo()
             await self.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
             print("bot ready")
@@ -45,23 +45,30 @@ class Bot(BotBase):
         else:
             print("bot reconnected")
 
-    def updatesquare(self):
-        @self.bot.command(name='updatesquare')
-        async def command(self, letter: str, square: int):
-            await self.stdout.send("letter: ", letter, "square: ", square)
-
 bot = Bot()
 board = Bingo()
 
 @bot.command(name='green')
 async def green(ctx, letter, square: int):
-    board.greenUpdate(letter, square)
-    await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
+    result = board.greenUpdate(letter, square)
+    if (result < 0):
+        await bot.stdout.send('The free space is already green!')
+    elif (result < 1):
+        await bot.stdout.send(f'{letter} {square} is already a green square!')
+    else:
+        await bot.stdout.send(f'{letter} {square} was succesfully changed from red to green!')
+        await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
 
 @bot.command(name='red')
 async def red(ctx, letter, square: int):
-    board.redUpdate(letter, square)
-    await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
+    result = board.redUpdate(letter, square)
+    if (result < 0):
+        await bot.stdout.send('The free space is always green and cannot be changed to red!')
+    elif (result < 1):
+        await bot.stdout.send(f'{letter} {square} is already a red square!')
+    else:
+        await bot.stdout.send(f'{letter} {square} was succesfully changed from green to red!')
+        await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
 
 @bot.command(name='showboard')
 async def showboard(ctx):
@@ -74,12 +81,12 @@ async def commands(ctx):
     myEmbed.add_field(name="-green <letter> <square>", value="Change square on the board to green", inline=False)
     myEmbed.add_field(name="-red <letter> <square>", value="Change square on the board to red", inline=False)
     myEmbed.add_field(name="-showboard", value="Displays current board", inline=False)
-    myEmbed.add_field(name="starttime", value="Shows when the current board was generated", inline=False)
-    myEmbed.set_footer(text="Future releases: idk suggest something")
+    myEmbed.add_field(name="-starttime", value="Shows when the current board was generated", inline=False)
+    myEmbed.set_footer(text="Future releases: idk suggest something!!")
     myEmbed.set_author(name="bendy")
 
     await bot.stdout.send(embed=myEmbed)
 
 @bot.command(name='starttime')
 async def commands(ctx):
-    await bot.stdout.send("The current board was generated on " + board.getStartDate() + " at " + board.getStartTime())
+    await bot.stdout.send(f'The current board was generated on {board.getStartDate()} at {board.getStartTime()} PST.')
