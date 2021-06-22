@@ -6,24 +6,8 @@ import random
 import datetime
 
 class Bingo():
-    possibleSquares = ['Dragoon types\nin #forums\nor says a\nhistorical fact', 'One of the surf\nservers needs\na restart',
-                   'Someone\nmakes a\nresignation\npost on\nthe forums', 'Someones\ncomplaining in\nthe shoutbox\non the forums',
-                   'Alt evader\ngets banned', 'Scammer gets\nbanned from\ndiscord', 'Main discord\nannouncement',
-                   'GFL-Wide\nserver issues in\nmultiple games', 'Dragoon makes\nan anime\nreference',
-                   'Someone with a\nDaBaby pic\njoins one of\nthe discords', 'Frenzy actually\nresponds to\na dm',
-                   'Discord rule\n9 report', 'GFX request\nis completed', 'Mod team\napplication\ngets accepted',
-                   'Petr says\nsomething\ndebatable or\ncomplains over\nsomething', 'Infra mentions\na girl', 'Roy goes\non a\nbreak',
-                   'New surf\nvideo on\nGFL Surf\nchannel', 'One of the\nGFL discords\ngets raided', 'Someone pings\nfurry Alexis\ninstead of\ncool Alexis', 
-                   'Infra gets\npinged while\nasleep', 'Infra says\n"basically"', 'Carlbot says\n"actually" in\nsurf discord', 'Someone gets\ncaught in 4k', 'Someone with\n2+ roles\ngets another',
-                   'Someone gets\naround a\nfilter', 'More than\n5 people in\nmain vc', '15 posts on\nthe forums\nwithin 24 hrs', 'A bug on the\nforums gets\nreported', 
-                   'Someone hits\n30x using slots', 'CWRP hits\n80 players', 'A rust server\nhits 100 pop', 'Surf hits 100\nplayers', 'GFL twitter\nposts a\ntweet', 
-                   'Someone brings\nup veganism', 'There is a\ndebate in\n#politics', '3 hours and\nno messages\nin main\n#general', 'Someone posts\nskribble.io or\ngarticphone\nlink',
-                   'Someone posts\na metal song', 'Someone posts\na rap song', 'Someone posts\na country song', 'Someone is\ncomplaining \nabout their\nparents', 'Someone posts\ntheir own\nartwork in\nmain #art',
-                   'Someone asks if\nmember is free', 'More than\n$200 donated\nin 1 day', 'More than\n$50 donated\nfrom 1 person', 'Someone asks\nabout a\ndead server', 'Someone brings\nup alcohol', 
-                   'NSFW ban\nin discord', 'NSFW ban\nfrom in-game\nspray', 'Prop-hunt hits\n45 players', '2fort hits\n33 players', 'Hightower hits\n33 players', 'TTT Anarchy\nhits 33 pop',
-                   'Dark rp\nis up', 'Squad is up', 'More than 2\nposts in last\ncomments wins', 'More than 2\nposts in last\nquote wins', 'More than 20\npeople join\nrust in 1 day',
-                   'More than 20\npeople join\nmain in 1 day', 'Someone says\nstepbro or\nstepsis', 'Someone says\nsus outside\nof AH',
-                   ]
+    possibleSquares = [] # TODO: add events here as strings separated by commas: ['X does Y', 'Z does W'] etc
+                         # will have to accomodate for running off of square using \n
 
     eventBoard = [
                    ["", "", "", "", ""],
@@ -41,6 +25,9 @@ class Bingo():
                    ]
 
     startTime = 0
+    rowDone = -1
+    colDone = -1
+    diagDone = -1
 
     def __init__(self):
         random.shuffle(self.possibleSquares)
@@ -61,21 +48,31 @@ class Bingo():
         if (row > -1):
             for i in range(0, 5):
                 for j in range(0, 5):
-                    if (i == 2 and j == 2):
+                    if (i == 2 and j == 2 and self.diagDone != 1 and self.rowDone < 0 and self.colDone < 0):
                         d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (0, 255, 0))
                         continue
+
                     if (self.stateBoard[j][i] == 0):
                         d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (255, 0, 0))
+                    elif (self.rowDone > -1 or self.colDone > -1 or self.diagDone > -1):
+                        if (self.diagDone > 0 and i == 2 and j == 2):
+                            d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (255, 255, 0))
+                        elif ((self.rowDone == j) or (self.colDone == i)):
+                            if (i == 2 and j == 2):
+                                d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (255, 255, 0))
+                            else:
+                                d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (255, 255, 0))
+                        else:
+                            d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (0, 255, 0))
                     else:
                         d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (0, 255, 0))
         else:
             for i in range(0, 5):
                 for j in range(0, 5):
-
                     if (i == 2 and j == 2):
                         d1.text((i*243, j*200 + 200), 'Free space', font=myFont, fill = (0, 255, 0))
                         continue
-                    
+
                     if (self.stateBoard[row][col] == 0):
                         d1.text((i*243, j*200 + 200), self.eventBoard[i][j], font=myFont, fill = (255, 0, 0))
                     else:
@@ -134,35 +131,71 @@ class Bingo():
             for j in range(0, 5):
                 print(self.stateBoard[i][j])
 
-    def greenUpdate(self, letter: str, square: int):
-        col = self.getCol(letter)
-        row = self.getRow(square)
-
-        self.stateBoard[row][col] = 1
-        print(self.eventBoard[col][row])
-        self.printStates()
-
+    def colSum(self, col: int):
         count = 0
         for i in range(0, 5):
-            count += self.stateBoard[i][0]
+            count += self.stateBoard[i][col]
         
-        # if (count == 5):
-        #     print("Bingo")
-
-        self.populateBoard(col, row)
+        return count
     
-    def redUpdate(self, letter: str, square: int):
+    def rowSum(self, row: int):
+        count = 0
+        for i in range(0, 5):
+            count += self.stateBoard[row][i]
+        
+        return count
+    
+    def diagonalSum(self):
+        return (self.stateBoard[0][0] + self.stateBoard[1][1] + self.stateBoard[2][2] + self.stateBoard[3][3]
+            + self.stateBoard[4][4])
+
+    def greenUpdate(self, letter: str, square: int):
+        if (letter == "N" and square == 3):
+            return -1
+
         col = self.getCol(letter)
         row = self.getRow(square)
 
-        self.stateBoard[row][col] = 0
-        print(self.eventBoard[col][row])
-        self.printStates()
+        if (self.stateBoard[row][col] == 1):
+            return 0
+
+        self.stateBoard[row][col] = 1
+        
+        if (self.rowSum(row) == 5):
+            self.rowDone = row
+        
+        if (self.colSum(col) == 5):
+            self.colDone = col
+        
+        if (self.diagonalSum() == 5):
+            self.diagDone = 1
+
         self.populateBoard(col, row)
-
-
+        return 1
+    
+    def redUpdate(self, letter: str, square: int):
+        if (letter == "N" and square == 3):
+            return -1
         
+        col = self.getCol(letter)
+        row = self.getRow(square)
+
+        if (self.stateBoard[row][col] == 0):
+            return 0
+
+        self.stateBoard[row][col] = 0
+
+        if (self.rowSum(row) != 5):
+            self.rowDone = -1
         
+        if (self.colSum(col) != 5):
+            self.colDone = -1
+        
+        if (self.diagonalSum() == 5):
+            self.diagDone = -1
+
+        self.populateBoard(col, row)
+        return 1
 
 board = Bingo()
 board.printEvents()
