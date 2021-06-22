@@ -19,8 +19,6 @@ class Bot(BotBase):
 
     def run(self, version):
         self.VERSION = version
-        # path = Path(__file__).parent / "token.0"
-        # self.TOKEN = path.read_text()
         with open("lib/bot/token.0", "r", encoding="utf-8") as tf:
             self.TOKEN = tf.read()
         
@@ -54,9 +52,9 @@ async def green(ctx, letter, square: int):
     if (result < 0):
         await bot.stdout.send('The free space is already green!')
     elif (result < 1):
-        await bot.stdout.send(f'{letter} {square} is already a green square!')
+        await bot.stdout.send(f'{letter.upper()} {square} is already a green square!')
     else:
-        await bot.stdout.send(f'{letter} {square} was succesfully changed from red to green!')
+        await bot.stdout.send(f'{letter.upper()} {square} was succesfully changed from red to green!')
         await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
 
 @bot.command(name='red')
@@ -65,9 +63,9 @@ async def red(ctx, letter, square: int):
     if (result < 0):
         await bot.stdout.send('The free space is always green and cannot be changed to red!')
     elif (result < 1):
-        await bot.stdout.send(f'{letter} {square} is already a red square!')
+        await bot.stdout.send(f'{letter.upper()} {square} is already a red square!')
     else:
-        await bot.stdout.send(f'{letter} {square} was succesfully changed from green to red!')
+        await bot.stdout.send(f'{letter.upper()} {square} was succesfully changed from green to red!')
         await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
 
 @bot.command(name='showboard')
