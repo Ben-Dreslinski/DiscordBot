@@ -1,12 +1,11 @@
 import discord
-from discord.ext import commands
 from discord.ext.commands import Bot as BotBase
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from pathlib import Path
 from lib.bingo import Bingo
+import asyncio
 
 PREFIX = "-"
-OWNER_IDS = [119293628832153600]
+OWNER_IDS = []
 
 class Bot(BotBase):
     def __init__(self):
@@ -36,7 +35,6 @@ class Bot(BotBase):
             self.ready = True
             self.stdout = self.get_channel()
             self.guild = self.get_guild()
-            board = Bingo()
             await self.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
             print("bot ready")
             await self.change_presence(activity=discord.Game('-commands'))
@@ -74,17 +72,36 @@ async def showboard(ctx):
 
 @bot.command(name='commands')
 async def commands(ctx):
-    myEmbed = discord.Embed(title="Commands", description="Last updated 6/2/2021", color=0x00ff00)
+    myEmbed = discord.Embed(title="Commands", description="Last updated 6/22/2021", color=0x00ff00)
     myEmbed.add_field(name="Current Version", value=bot.VERSION, inline=False)
     myEmbed.add_field(name="-green <letter> <square>", value="Change square on the board to green", inline=False)
     myEmbed.add_field(name="-red <letter> <square>", value="Change square on the board to red", inline=False)
     myEmbed.add_field(name="-showboard", value="Displays current board", inline=False)
     myEmbed.add_field(name="-starttime", value="Shows when the current board was generated", inline=False)
-    myEmbed.set_footer(text="Future releases: idk suggest something!!")
+    myEmbed.add_field(name='-newboard', value='Creates a new board and discards the old one, cannot be undone', inline=False)
     myEmbed.set_author(name="bendy")
 
     await bot.stdout.send(embed=myEmbed)
 
 @bot.command(name='starttime')
 async def commands(ctx):
-    await bot.stdout.send(f'The current board was generated on {board.getStartDate()} at {board.getStartTime()} PST.')
+    await bot.stdout.send(f'The current board was generated on {board.getStartDate()} at {board.getStartTime()} UTC.')
+
+@bot.command(name='newboard')
+async def newBoard(ctx):
+    await bot.stdout.send('This will create a new board which discards the old one and can NOT be undone, are you sure? (y/n)')
+
+    try:
+        message = await bot.wait_for('message', check=lambda m: m.author == ctx.author and m.channel == ctx.channel, timeout=30.0)
+    except asyncio.TimeoutError:
+        await bot.stdout.send('Response timed out, aborting.')
+    else:
+        if (message.content.lower() == 'y'):
+            await bot.stdout.send('Creating new board...')
+            global board
+            board.reset()
+            await bot.stdout.send(file=discord.File('lib/bingo/BINGOedit.png'))
+        elif (message.content.lower() == 'n'):
+            await bot.stdout.send('The old board will be preserved')
+        else:
+            await bot.stdout.send('Response not recognized, aborting.')
