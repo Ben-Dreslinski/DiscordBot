@@ -143,21 +143,6 @@ class Bingo():
             col = 4
         
         return col
-    
-    def getRow(self, square: int):
-        square = int(square)
-        if (square == 1):
-            row = 0
-        elif (square == 2):
-            row = 1
-        elif (square == 3):
-            row = 2
-        elif (square == 4):
-            row = 3
-        elif (square == 5):
-            row = 4
-        
-        return row
 
     def getBoardEvents(self):
         return self.eventBoard
@@ -192,7 +177,7 @@ class Bingo():
             return -1
 
         col = self.getCol(letter)
-        row = self.getRow(square)
+        row = square - 1
 
         if (self.stateBoard[row][col] == 1):
             return 0
@@ -219,7 +204,7 @@ class Bingo():
             return -1
         
         col = self.getCol(letter)
-        row = self.getRow(square)
+        row = square - 1
 
         if (self.stateBoard[row][col] == 0):
             return 0
