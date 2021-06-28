@@ -46,6 +46,10 @@ board = Bingo()
 
 @bot.command(name='green')
 async def green(ctx, letter, square: int):
+    if (square < 1 or square > 5):
+        await bot.stdout.send('Square not recognized, valid args are 1-5 inclusive.')
+        return
+
     result = board.greenUpdate(letter, square)
     if (result < 0):
         await bot.stdout.send('The free space is already green!')
@@ -57,6 +61,10 @@ async def green(ctx, letter, square: int):
 
 @bot.command(name='red')
 async def red(ctx, letter, square: int):
+    if (square < 1 or square > 5):
+        await bot.stdout.send('Square not recognized, valid args are 1-5 inclusive.')
+        return
+
     result = board.redUpdate(letter, square)
     if (result < 0):
         await bot.stdout.send('The free space is always green and cannot be changed to red!')
