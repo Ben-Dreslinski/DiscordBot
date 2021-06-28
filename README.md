@@ -35,6 +35,6 @@ Once bingo is gotten, whether it be row, column, or diagonal, said line will lig
 This package only needs a few changes to run into your server and off of your bot:
 
 1. Paste your bot's discord token directly into the [token.0](https://github.com/Ben-Dreslinski/DiscordBot/blob/main/lib/bot/token.0) file, no quotes or brackets needed.
-2. Paste your discord id into the OWNER_IDS set in the [bot class](https://github.com/Ben-Dreslinski/DiscordBot/blob/main/lib/bot/__init__.py) (line 9) file, no quotes or brackets needed.
+2. Paste your discord id into the OWNER_IDS set in the [bot class](https://github.com/Ben-Dreslinski/DiscordBot/blob/main/lib/bot/__init__.py) (line 8) file, no quotes or brackets needed.
 3. Paste your channel and guild (server) ids into the the "stdout" and "guild" fields, respectively, in the [bot class](https://github.com/Ben-Dreslinski/DiscordBot/blob/main/lib/bot/__init__.py) (lines 37 and 38).
 4. Put a minimum of 25 comma-separated events (strings) into the "possibleSquares" field in the [bingo class](https://github.com/Ben-Dreslinski/DiscordBot/blob/main/lib/bingo/__init__.py) (line 9). A little bit of trial and error may be required using the newline, "\n", character depending on how long the strings are.
