@@ -72,7 +72,7 @@ async def showboard(ctx):
 
 @bot.command(name='commands')
 async def commands(ctx):
-    myEmbed = discord.Embed(title="Commands", description="Last updated 6/22/2021", color=0x00ff00)
+    myEmbed = discord.Embed(title="Commands", description="Last updated 6/27/2021", color=0x00ff00)
     myEmbed.add_field(name="Current Version", value=bot.VERSION, inline=False)
     myEmbed.add_field(name="-green <letter> <square>", value="Change square on the board to green", inline=False)
     myEmbed.add_field(name="-red <letter> <square>", value="Change square on the board to red", inline=False)
